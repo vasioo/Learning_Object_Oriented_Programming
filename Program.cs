@@ -1,62 +1,36 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Attributes
+namespace ActivatorCreateInstance
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Product product = new Product()
+            //string typeToCreate = Console.ReadLine();
+            Type type = typeof(Student); //Type.GetType(typeToCreate);
+            object instance = (Student)Activator.CreateInstance(type, "uahhs");
+            FieldInfo[] fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (FieldInfo field in fields)
             {
-                Id = 5,
-                Model = "Top model",
-                Name = "Seat Leon"
-
-            };
-            SerializeToJSON(product);
-        }
-        public static string SerializeToJSON<T>(T instance)
-        {
-            string result = "";
-            Type type = typeof(T);
-
-            PropertyInfo[] props = type.GetProperties();
-            foreach (var prop in props)
-            {
-                Attribute serializableAttributes = prop.GetCustomAttribute(typeof(SerializableAttribute));
-                if (serializableAttributes != null)
-                {
-
-                    Console.WriteLine($"{{{prop.Name}:{prop.GetValue(instance)}}}");
-                }
+                Console.WriteLine($"field.Name - {field.Name}");
+                Console.WriteLine($"field.Value - {field.GetValue(instance)}");
+                Console.WriteLine($"field.IsStatic - {field.IsStatic}");
+                Console.WriteLine($"field.FieldType - {field.FieldType}");
+                Console.WriteLine($"field.IsPublic - {field.IsPublic}");
+                Console.WriteLine($"field.IsFamily - {field.IsFamily}");
+                Console.WriteLine($"field.IsPrivate - {field.IsPrivate}");
             }
-
-            return result;
         }
     }
-    class Product
+    class Student
     {
-        [SerializableAttribute(true)]
-        public int Id { get; set; }
-        [SerializableAttribute]
-        public string Name { get; set; }
-        [SerializableAttribute(true)]
-        public string Model { get; set; }
-        public int Quantity { get; set; }
-        [SerializableAttribute]
-        public bool IsFake { get; set; }
-    }
-    class SerializableAttribute : Attribute
-    {
-        public SerializableAttribute(bool isDeep)
+        private string name;
+        private static string cheatingCodes = "42,355";
+        public Student(string name)
         {
-            IsDeep = IsDeep;
+            this.name = name;
         }
-        public SerializableAttribute() : this(false)
-        {
 
-        }
-        public bool IsDeep { get; set; }
     }
 }
