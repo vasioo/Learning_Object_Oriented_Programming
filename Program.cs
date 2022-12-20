@@ -1,48 +1,62 @@
 ﻿using System;
 using System.Reflection;
-using System.Text;
 
-namespace ConstructorReflection
+namespace Attributes
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Type type = typeof(Student);
-            ConstructorInfo[] constructors = type.GetConstructors();
-            foreach (var constructor in constructors)
+            Product product = new Product()
             {
-                ParameterInfo[] parameters = constructor.GetParameters();
-                Console.WriteLine($"Constructor with {parameters.Length} count of params");
-                foreach (var parameter in parameters)
+                Id = 5,
+                Model = "Top model",
+                Name = "Seat Leon"
+
+            };
+            SerializeToJSON(product);
+        }
+        public static string SerializeToJSON<T>(T instance)
+        {
+            string result = "";
+            Type type = typeof(T);
+
+            PropertyInfo[] props = type.GetProperties();
+            foreach (var prop in props)
+            {
+                Attribute serializableAttributes = prop.GetCustomAttribute(typeof(SerializableAttribute));
+                if (serializableAttributes != null)
                 {
-                    Console.WriteLine(parameter.ParameterType+" ");
-                    Console.WriteLine(parameter.Name);
+
+                    Console.WriteLine($"{{{prop.Name}:{prop.GetValue(instance)}}}");
                 }
-                Console.WriteLine();
             }
-            Student student = (Student)constructors[2].Invoke(new object[] { });
-            student.Hi();
+
+            return result;
         }
     }
-    class Student
+    class Product
     {
-        private string name;
-        private int x;
-        private static string cheatinBuddy = "Dimitrichka";
-        private string cheatingCodes = "42, 355";
-        public Student(string name, int x, int y, StringBuilder text)
+        [SerializableAttribute(true)]
+        public int Id { get; set; }
+        [SerializableAttribute]
+        public string Name { get; set; }
+        [SerializableAttribute(true)]
+        public string Model { get; set; }
+        public int Quantity { get; set; }
+        [SerializableAttribute]
+        public bool IsFake { get; set; }
+    }
+    class SerializableAttribute : Attribute
+    {
+        public SerializableAttribute(bool isDeep)
         {
-            Console.WriteLine("Setting name in the constructor "+name);
-            this.name = name;
+            IsDeep = IsDeep;
         }
-        public Student()
+        public SerializableAttribute() : this(false)
         {
-            Console.WriteLine("Prazen konstruktor");
+
         }
-        public void Hi()
-        {
-            Console.WriteLine("opala"+name);
-        }
+        public bool IsDeep { get; set; }
     }
 }
