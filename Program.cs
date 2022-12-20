@@ -1,16 +1,28 @@
 ﻿using System;
 
-namespace Animals
+namespace IsKeyWord
 {
-    public class StartUp
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            Animal animal;
-            animal = new Cat("Peter", "Whiskas");
-            Console.WriteLine(animal.ExplainSelf());
-            animal = new Dog("George", "Meat");
-            Console.WriteLine(animal.ExplainSelf());
+            Shape shape;
+            if (new Random().Next()%2==0)
+            {
+                shape = new Circle();
+            }
+            else
+            {
+                shape = new Rectangle();
+            }
+            //Rectangle rec = shape as Rectangle;
+            //Circle cir = shape as Circle;
+            shape.Draw();
+            if (shape is Circle)
+            {
+               int radius = ((Circle)shape).Radius;
+                Console.WriteLine($"Radius: {radius}");
+            }
         }
     }
 }
